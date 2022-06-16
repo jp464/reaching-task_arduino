@@ -24,14 +24,14 @@ void pin_time(int pin, float time) {
   digitalWrite(pin, LOW);
 }
 
-boolean beamBreak_check(int break_pin, int report_pin) {
-  int state = digitalRead(break_pin);
+boolean beamBreak_check() {
+  int state = digitalRead(beamBreak_pin);
   
   while (state != 0) {
-    state = digitalRead(break_pin);
+    state = digitalRead(beamBreak_pin);
   }
 
-  pin_time(report_pin, 250);
+  pin_time(beamReport_pin, 250);
   return true;
 }
 
@@ -40,10 +40,11 @@ boolean beamBreak_check(int break_pin, int report_pin) {
 //========================================================================
 void loop() {
   digitalWrite(cue_pin, HIGH);
+  pin_time(reward_pin, 5); // check with Konstantin
 
   int cnt = 0;
   while (cnt < 10) {
-    if (beamBreak_check(beamBreak_pin, beamReport_pin)) {
+    if (beamBreak_check()) {
       cnt++;
       Serial.println(cnt);
       delay(250); // count beam breaks here?
@@ -52,13 +53,14 @@ void loop() {
   }
   
   digitalWrite(cue_pin, LOW);
+  
   float wait_time = random(10000, 20000);
-  Serial.println(wait_time);
-
   float start_time = millis();
   float end_time = start_time + wait_time;
 
-  while(millis() < end_time) {
-    beamBreak_check(beamBreak_pin, beamReport_pin);
+  float cur_time = millis();
+  while(cur_time < end_time) {
+    beamBreak_check();
+    cur_time = millis();
   }
 }
