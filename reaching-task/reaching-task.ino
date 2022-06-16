@@ -60,7 +60,7 @@ void loop() {
 
   float cur_time = millis();
   while(cur_time < end_time) {
-    beamBreak_check();
+    if (digitalRead(beamBreak_pin) == 0) pin_time(beamReport_pin, 250);
     cur_time = millis();
   }
 }
