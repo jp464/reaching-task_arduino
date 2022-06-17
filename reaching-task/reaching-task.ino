@@ -1,4 +1,12 @@
 //========================================================================
+// Customize Parameters
+//========================================================================
+
+// Determines the num of beam breaks before the cue turns off. Choose random number of reaches or a set number. 
+int num_reaches = random(5, 15);
+//int num_reaches = 10;
+
+//========================================================================
 // PINs
 //========================================================================
 const int cue_pin = 13;
@@ -31,7 +39,15 @@ boolean beamBreak_check() {
     state = digitalRead(beamBreak_pin);
   }
 
-  pin_time(beamReport_pin, 250);
+  digitalWrite(beamReport_pin, HIGH);
+  delay(250);
+
+  while (state != 1) {
+    state = digitalRead(beamBreak_pin);
+  }
+
+  digitalWrite(beamReport_pin, LOW);
+  
   return true;
 }
 
@@ -43,7 +59,7 @@ void loop() {
   pin_time(reward_pin, 5); // check with Konstantin
 
   int cnt = 0;
-  while (cnt < 10) {
+  while (cnt < num_reaches) {
     if (beamBreak_check()) {
       cnt++;
       Serial.println(cnt);
